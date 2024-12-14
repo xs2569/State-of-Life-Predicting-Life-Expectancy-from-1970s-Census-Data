@@ -1,0 +1,23 @@
+---
+title: "State-of-Life-Predicting-Life-Expectancy-from-1970s-Census-Data"
+author: "XunSun"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(GGally)
+library(patchwork)
+library(gt)
+library(leaps)
+library(caret)
+```
+R dataset state.x77 from library(faraway) contains information on 50 states from 1970s collected by US Census Bureau. The goal is to predict ‘life expectancy’ using a combination of remaining variables.
+```{r}
+library(faraway)
+dat.state <- as.data.frame(state.x77)
+head(dat.state)
+```
+
