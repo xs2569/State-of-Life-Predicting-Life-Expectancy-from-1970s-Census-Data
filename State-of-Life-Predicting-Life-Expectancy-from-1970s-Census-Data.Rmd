@@ -136,7 +136,8 @@ library(patchwork)
 
 ```{r}
 data.state <- data.state |>
-  mutate(log_Population = log(population)) 
+  mutate(log_Population = log(population)) |>
+  select(-population)
 view(data.state)
 ```
 
@@ -244,4 +245,25 @@ modelsummary(list(stepwise_AIC_Model = stepwise_aic,stepwisw_BIC_Model = stepwis
 
 
 ```
-backward_aicforward_aic
+```{r}
+all_submodel = regsubsets(life_exp ~., data = data.state)
+summary(all_submodel)
+library(leaps)
+plot(all_submodel, scale = "adjr2") 
+
+plot(all_submodel, scale = "bic") 
+
+submodel_summary <- summary(all_submodel)
+
+print(submodel_summary$which)
+
+sum1 = summary(all_submodel)
+par(mfrow=c(1,2))
+plot(1:7, sum1$cp, xlab = "No of parameters", ylab = "Cp Statistic")
+abline(0,1)
+plot(1:7, sum1$adjr2, xlab = "No of parameters", ylab = "Adj R2")
+```
+```{r}
+library(glmnet)
+```
+
