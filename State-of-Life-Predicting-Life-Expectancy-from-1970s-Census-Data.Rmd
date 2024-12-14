@@ -136,9 +136,101 @@ library(patchwork)
 ```{r}
 data.state <- data.state |>
   mutate(log_Population = log(population)) 
+view(data.state)
+```
+
+
+```{r}
+# Define the response variable and dataset
+response <- "life_expectancy"  # Replace with your actual response variable
+data <- data.state            # Your dataset
+
+# Null model
+null_model <- lm(life_exp ~ 1, data = data)
+
+# Full model (all predictors)
+full_model <- lm(life_exp ~ ., data = data)
+
 ```
 
 ```{r}
 
+library(MASS)
+library(olsrr)
+
+```
+```{r}
+# Forward Selection
+forward_model_aic <- stepAIC(null_model, 
+                         scope = list(lower = null_model, upper = full_model), direction = "forward")
+
+# Summary of the selected model
+summary(forward_model_aic)
+
+
+```
+Backward Selection
+```{r}
+# Backward selection based on AIC
+backward_aic <- step(full_model, 
+                     direction = "backward",trace = TRUE)
+
+# Display summary of the final model
+summary(backward_aic)
+
+# Number of observations
+n <- nrow(data.state)
+
+# Backward selection based on BIC
+backward_bic <- step(full_model, 
+                     direction = "backward", 
+                     k = log(n), 
+                     trace = TRUE)
+
+# Display summary of the final model
+summary(backward_bic)
+
+
+# Forward Selection with p-values
+forward_model_ols <- ols_step_forward_p(null_model, 
+                                        full_model, 
+                                        p_enter = 0.05)
+
+# Summary and results
+print(forward_model_ols)
+
+```
+
+```{r}
+# Stepwise selection (both directions, default AIC)
+stepwise_aic <- step(full_model, 
+                     direction = "both",trace = TRUE)
+
+# Summary of the final model
+summary(stepwise_aic)
+
+# Number of observations
+n <- nrow(data.state)
+
+# Stepwise selection (both directions, BIC)
+stepwise_bic <- step(full_model, 
+                     direction = "both", 
+                     k = log(n),trace = TRUE)  # BIC penalty
+
+# Summary of the final model
+summary(stepwise_bic)
+
+```
+
+```{r}
+library(olsrr)
+
+# Perform stepwise selection based on p-values (default uses AIC)
+stepwise_model <- ols_step_both_p(full_model, 
+                                  pent = 0.05,  # Entry significance level
+                                  prem = 0.05) # Removal significance level
+
+# Print stepwise selection results
+print(stepwise_model)
 ```
 
