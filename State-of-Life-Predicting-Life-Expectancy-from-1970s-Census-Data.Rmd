@@ -17,7 +17,9 @@ library(caret)
 R dataset state.x77 from library(faraway) contains information on 50 states from 1970s collected by US Census Bureau. The goal is to predict ‘life expectancy’ using a combination of remaining variables.
 ```{r}
 library(faraway)
-dat.state <- as.data.frame(state.x77)
-head(dat.state)
+data.state <- as.data.frame(state.x77)|> 
+  janitor::clean_names() 
+head(data.state)
+view(data.state)
 ```
 
