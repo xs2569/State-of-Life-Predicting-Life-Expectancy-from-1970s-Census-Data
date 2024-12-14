@@ -22,4 +22,123 @@ data.state <- as.data.frame(state.x77)|>
 head(data.state)
 view(data.state)
 ```
+a) Provide descriptive statistics for all variables of interest – no test required
+```{r}
+summary(data.state)
+```
+Examine exploratory plots, e.g., scatter plots, histograms, boxplots to get a sense of
+the data and possible variable transformations.
+```{r}
+data.state |>
+  relocate(`life_exp`) |>
+  ggpairs()
+```
+## look for appropriate transformations
+```{r}
+density_plot_population <-data.state |>
+  ggplot(aes(x = population)) +
+  geom_density()
+
+density_plot_logpopulation <-dat.state |>
+  mutate(log_population = log(population)) |>
+  ggplot(aes(x = log_population)) + geom_density()
+
+density_plot_inver_population <-dat.state |>
+  mutate(inver_population = 1/(population)) |>
+  ggplot(aes(x = inver_population)) + geom_density()
+
+
+density_plot_population + density_plot_logpopulation + density_plot_inver_population
+```
+
+```{r}
+density_plot_area <- data.state |>
+  ggplot(aes(x = area)) +
+  geom_density()
+
+density_plot_logarea <- dat.state |>
+  mutate(log_area = log(area)) |>
+  ggplot(aes(x = log_area)) + geom_density()
+
+density_plot_area + density_plot_logarea
+```
+
+```{r}
+density_plot_illiteracy <- data.state |>
+  ggplot(aes(x = illiteracy)) +
+  geom_density()
+
+density_plot_logilliteracy <- dat.state |>
+  mutate(log_illiteracy = log(illiteracy)) |>
+  ggplot(aes(x = log_illiteracy)) + geom_density()
+
+density_plot_illiteracy + density_plot_logilliteracy
+```
+
+
+```{r}
+qq_population <- data.state |>
+  ggplot(aes(sample = population)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ Plot: Population")
+
+qq_log_population <- data.state |>
+  mutate(log_population = log(population)) |>
+  ggplot(aes(sample = log_population)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ Plot: Log Population")
+
+qq_inver_population <- data.state |>
+  mutate(inver_population = 1 / (population)) |>
+  ggplot(aes(sample = inver_population)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ Plot: Inverse Population")
+
+# QQ Plots for Area
+qq_area <- data.state |>
+  ggplot(aes(sample = area)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ Plot: Area")
+
+qq_log_area <- data.state |>
+  mutate(log_area = log(area)) |>
+  ggplot(aes(sample = log_area)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ Plot: Log Area")
+
+# QQ Plots for Illiteracy
+qq_illiteracy <- data.state |>
+  ggplot(aes(sample = illiteracy)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ Plot: Illiteracy")
+
+qq_log_illiteracy <- data.state |>
+  mutate(log_illiteracy = log(illiteracy)) |>
+  ggplot(aes(sample = log_illiteracy)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("QQ Plot: Log Illiteracy")
+
+# Combine QQ Plots with Patchwork for Comparison
+library(patchwork)
+
+(qq_population | qq_log_population | qq_inver_population) / 
+(qq_area | qq_log_area) / 
+(qq_illiteracy | qq_log_illiteracy)
+```
+
+```{r}
+data.state <- data.state |>
+  mutate(log_Population = log(population)) 
+```
+
+```{r}
+
+```
 
