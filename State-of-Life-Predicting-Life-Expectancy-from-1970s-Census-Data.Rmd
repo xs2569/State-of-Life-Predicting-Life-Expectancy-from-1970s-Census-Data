@@ -14,6 +14,7 @@ library(gt)
 library(leaps)
 library(caret)
 library(ggplot2)
+library(dbplyr)
 ```
 R dataset state.x77 from library(faraway) contains information on 50 states from 1970s collected by US Census Bureau. The goal is to predict ‘life expectancy’ using a combination of remaining variables.
 ```{r}
@@ -249,6 +250,7 @@ modelsummary(list(stepwise_AIC_Model = stepwise_aic,stepwisw_BIC_Model = stepwis
 all_submodel = regsubsets(life_exp ~., data = data.state)
 summary(all_submodel)
 library(leaps)
+par(mfrow=c(1,2))
 plot(all_submodel, scale = "adjr2") 
 
 plot(all_submodel, scale = "bic") 
@@ -301,5 +303,38 @@ print(selected_variables)
 
 plot(lasso_cv$glmnet.fit, xvar = "lambda", label = TRUE)
 
+
+
+```
+```{r}
+# Define the formula
+selected_formula <- life_exp ~ murder + hs_grad + frost + log_Population
+
+# Fit the regression model with selected variables
+selected_model <- lm(selected_formula, data = data.state)
+
+# Display the summary of the regression
+summary(selected_model)
+```
+
+```{r}
+par(mfrow = c(2,2))
+plot(selected_model)
+```
+
+
+```{r}
+set.seed(111)
+
+train = trainControl(method = "cv", number = 10)
+
+model_10fold = train(selected_formula,
+data = data.state,
+trControl = train,
+method = 'lm',
+na.action = na.pass)
+
+model_10fold
+model_caret$resample
 ```
 
