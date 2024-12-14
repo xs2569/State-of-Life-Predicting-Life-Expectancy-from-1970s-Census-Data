@@ -13,6 +13,7 @@ library(patchwork)
 library(gt)
 library(leaps)
 library(caret)
+library(ggplot2)
 ```
 R dataset state.x77 from library(faraway) contains information on 50 states from 1970s collected by US Census Bureau. The goal is to predict ‘life expectancy’ using a combination of remaining variables.
 ```{r}
@@ -39,11 +40,11 @@ density_plot_population <-data.state |>
   ggplot(aes(x = population)) +
   geom_density()
 
-density_plot_logpopulation <-dat.state |>
+density_plot_logpopulation <-data.state |>
   mutate(log_population = log(population)) |>
   ggplot(aes(x = log_population)) + geom_density()
 
-density_plot_inver_population <-dat.state |>
+density_plot_inver_population <-data.state |>
   mutate(inver_population = 1/(population)) |>
   ggplot(aes(x = inver_population)) + geom_density()
 
@@ -56,7 +57,7 @@ density_plot_area <- data.state |>
   ggplot(aes(x = area)) +
   geom_density()
 
-density_plot_logarea <- dat.state |>
+density_plot_logarea <- data.state |>
   mutate(log_area = log(area)) |>
   ggplot(aes(x = log_area)) + geom_density()
 
@@ -68,7 +69,7 @@ density_plot_illiteracy <- data.state |>
   ggplot(aes(x = illiteracy)) +
   geom_density()
 
-density_plot_logilliteracy <- dat.state |>
+density_plot_logilliteracy <- data.state |>
   mutate(log_illiteracy = log(illiteracy)) |>
   ggplot(aes(x = log_illiteracy)) + geom_density()
 
@@ -161,11 +162,17 @@ library(olsrr)
 ```
 ```{r}
 # Forward Selection
-forward_model_aic <- stepAIC(null_model, 
+forward_aic <- stepAIC(null_model, 
                          scope = list(lower = null_model, upper = full_model), direction = "forward")
 
 # Summary of the selected model
-summary(forward_model_aic)
+summary(forward_aic)
+
+n <- nrow(data.state) 
+forward_bic <- step(null_model, 
+                    scope = list(lower = null_model, upper = full_model), 
+                    direction = "forward", 
+                    k = log(n)) 
 
 
 ```
@@ -191,13 +198,6 @@ backward_bic <- step(full_model,
 summary(backward_bic)
 
 
-# Forward Selection with p-values
-forward_model_ols <- ols_step_forward_p(null_model, 
-                                        full_model, 
-                                        p_enter = 0.05)
-
-# Summary and results
-print(forward_model_ols)
 
 ```
 
@@ -234,3 +234,14 @@ stepwise_model <- ols_step_both_p(full_model,
 print(stepwise_model)
 ```
 
+```{r}
+library(modelsummary)
+
+
+modelsummary(list(stepwise_AIC_Model = stepwise_aic,stepwisw_BIC_Model = stepwise_bic,backward_AIC_Model = backward_aic, backward_BIC_Model = backward_aic,forkward_AIC_Model = forward_aic, forward_BIC_Model = forward_aic), 
+             output = "markdown", 
+             statistic = c("std.error", "p.value"))
+
+
+```
+backward_aicforward_aic
