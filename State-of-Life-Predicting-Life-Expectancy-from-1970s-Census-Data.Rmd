@@ -265,5 +265,41 @@ plot(1:7, sum1$adjr2, xlab = "No of parameters", ylab = "Adj R2")
 ```
 ```{r}
 library(glmnet)
+# Convert predictors to a matrix (exclude the intercept)
+X <- model.matrix(life_exp ~ ., data = data.state)[, -1]
+
+# Response variable
+y <- data.state$life_exp
+
+# Fit LASSO model with cross-validation
+set.seed(123)  # Set seed for reproducibility
+lasso_cv <- cv.glmnet(X, y, alpha = 1, nfolds = 10)  # alpha = 1 for LASSO
+
+# Plot cross-validation results
+plot(lasso_cv)
+
+# Best lambda based on minimum cross-validation error
+best_lambda <- lasso_cv$lambda.min
+
+# Lambda within 1 standard error of the minimum error
+lambda_1se <- lasso_cv$lambda.1se
+
+cat("Best lambda (minimum error):", best_lambda, "\n")
+cat("Best lambda (1-SE rule):", lambda_1se, "\n")
+
+# Fit the final LASSO model
+final_lasso <- glmnet(X, y, alpha = 1, lambda = best_lambda)
+
+# Extract coefficients as a matrix
+lasso_coefficients <- as.matrix(coef(final_lasso))
+
+# Get the row names of variables with non-zero coefficients
+selected_variables <- rownames(lasso_coefficients)[lasso_coefficients[, 1] != 0]
+
+# Print the selected variables
+print(selected_variables)
+
+plot(lasso_cv$glmnet.fit, xvar = "lambda", label = TRUE)
+
 ```
 
