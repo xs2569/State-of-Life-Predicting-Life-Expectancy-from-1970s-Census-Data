@@ -2,7 +2,7 @@
 title: "State-of-Life-Predicting-Life-Expectancy-from-1970s-Census-Data"
 author: "XunSun"
 date: "`r Sys.Date()`"
-output: html_document
+output: word_document
 ---
 
 
@@ -335,6 +335,6 @@ method = 'lm',
 na.action = na.pass)
 
 model_10fold
-model_caret$resample
+model_10fold$resample
 ```
 
