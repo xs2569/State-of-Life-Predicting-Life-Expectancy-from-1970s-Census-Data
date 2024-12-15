@@ -5,6 +5,9 @@ date: "`r Sys.Date()`"
 output: word_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+```
 
 ```{r}
 library(tidyverse)
